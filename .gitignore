@@ -1,0 +1,11 @@
+.python-version
+__pycache__
+bin
+etc
+include
+lib
+pyvenv.cfg
+share
+u4ml.egg-info
+*.swp
+*.swo
