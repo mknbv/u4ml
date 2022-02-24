@@ -179,8 +179,6 @@ class LinesPlotter:
     if output is None:
       output = Output() if is_jupyter() else None
     self.output = output
-    if self.output:
-      display(self.output)
     self.ax = ax
     self.lines = {}
 
@@ -197,7 +195,9 @@ class LinesPlotter:
 
   @contextmanager
   def autoclear_context(self):
-    """ Clears the output on closing this context. """
+    """ Displays and clears the output on closing this context. """
+    if self.output is not None:
+      display(self.output)
     try:
       yield self
     finally:
