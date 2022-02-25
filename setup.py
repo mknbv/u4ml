@@ -17,6 +17,7 @@ setup(
         "scipy>=1.5.0",
         "tensorboard>=1.15",
         "tensorflow[cpu]>=2.8.0",
+        "torch>=1.5.1",
         "tqdm",
     ],
 )
