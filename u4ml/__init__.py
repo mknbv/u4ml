@@ -14,3 +14,8 @@ from u4ml.plot import (
     mean_std_errorbar,
     LinesPlotter,
 )
+from u4ml.anneal import (
+    AnnealingVariable,
+    TorchSched,
+    LinearAnneal,
+)
