@@ -16,8 +16,10 @@ setup(
         "numpy>=1.16.4",
         "scipy>=1.5.0",
         "tensorboard>=1.15",
-        "tensorflow>=2.8.0",
         "torch>=1.5.1",
         "tqdm",
     ],
+    extras_require={
+        "tensorflow": ["tensorflow>=2.8.0"],
+    },
 )
