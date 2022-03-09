@@ -9,7 +9,6 @@ import numpy as np
 from scipy.stats import mstats
 
 
-# pylint: disable=invalid-name
 def extend_line(line, newxs, newys):
   """ Updates line with new points. """
   xs, ys = map(list, line.get_data())
@@ -123,8 +122,8 @@ def _plot_mean_lines(plot_fn, ys, axis=0, label=None, alpha=0.1):
   """ Plots all lines and their mean using plot_fn. """
   ys = np.asarray(ys)
   lines = list(plot_fn(np.mean(ys, axis), label=label, lw=3))
-  n = ys.shape[axis]
-  for i in range(n):
+  num_lines = ys.shape[axis]
+  for i in range(num_lines):
     lines.append(
         plot_fn(np.take(ys, i, axis),
                 color=lines[0].get_color(), alpha=alpha)[0]
@@ -259,5 +258,3 @@ class LinesPlotter:
     with self.context():
       if self.output:
         clear_output()
-
-# pylnt: enable=invalid-name
