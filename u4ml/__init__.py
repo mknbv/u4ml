@@ -1,4 +1,9 @@
 """ u4ml package initialization. """
+from u4ml.anneal import (
+    AnnealingVariable,
+    TorchSched,
+    LinearAnneal,
+)
 from u4ml.plot import (
     extend_line,
     refresh_axis,
@@ -13,9 +18,4 @@ from u4ml.plot import (
     loglog_mean_std,
     mean_std_errorbar,
     LinesPlotter,
-)
-from u4ml.anneal import (
-    AnnealingVariable,
-    TorchSched,
-    LinearAnneal,
 )
