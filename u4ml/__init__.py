@@ -19,8 +19,19 @@ from u4ml.plot import (
     mean_std_errorbar,
     LinesPlotter,
 )
-from u4ml.ptbe import (
-    read_events,
-    read_tag,
-    plot_tag,
-)
+
+# pylint: disable=ungrouped-imports
+HAVE_TF = True
+try:
+  import tensorflow as tf
+except ModuleNotFoundError:
+  HAVE_TF = False
+if HAVE_TF:
+  from u4ml.ptbe import (
+      read_events,
+      read_tag,
+      plot_tag,
+  )
+  del tf
+del HAVE_TF
+# pylint: enable=ungrouped-imports
