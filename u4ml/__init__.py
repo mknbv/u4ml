@@ -4,6 +4,10 @@ from u4ml.anneal import (
     TorchSched,
     LinearAnneal,
 )
+from u4ml.argparse import (
+    get_defaults_parser,
+    log_args,
+)
 from u4ml.plot import (
     extend_line,
     refresh_axis,
@@ -18,10 +22,6 @@ from u4ml.plot import (
     loglog_mean_std,
     mean_std_errorbar,
     LinesPlotter,
-)
-from u4ml.parsers import (
-    get_defaults_parser,
-    log_args,
 )
 
 # pylint: disable=ungrouped-imports
