@@ -19,6 +19,10 @@ from u4ml.plot import (
     mean_std_errorbar,
     LinesPlotter,
 )
+from u4ml.parsers import (
+    get_defaults_parser,
+    log_args,
+)
 
 # pylint: disable=ungrouped-imports
 HAVE_TF = True
