@@ -13,7 +13,8 @@ def camel2snake(string):
 
 class AnnealingVariable(ABC):
   """ Variable the value of which changes after each step. """
-  def __init__(self, name=None):
+  def __init__(self, prefix="anneal", name=None):
+    self.prefix = prefix
     self.name = name or camel2snake(self.__class__.__name__)
     self.step_count = 0
 
@@ -39,14 +40,14 @@ class AnnealingVariable(ABC):
 
   def summarize(self, global_step):
     """ Writes summary of the value for tensorboard. """
-    summary.add_scalar(f"anneal/{self.name}", self.get_tensor(),
+    summary.add_scalar(f"{self.prefix}/{self.name}", self.get_tensor(),
                        global_step=global_step)
 
 
 class TorchSched(AnnealingVariable):
   """ Annealing variable based on torch scheduler. """
-  def __init__(self, scheduler, name=None):
-    super().__init__(name)
+  def __init__(self, scheduler, prefix="anneal", name=None):
+    super().__init__(prefix, name)
     self.scheduler = scheduler
     # pylint: disable=not-callable
     self.tensor = torch.tensor(self.scheduler.get_last_lr())
@@ -64,8 +65,8 @@ class TorchSched(AnnealingVariable):
 
 class LinearAnneal(AnnealingVariable):
   """ Linearly annealing variable. """
-  def __init__(self, start, nsteps, end=0., name=None):
-    super().__init__(name)
+  def __init__(self, start, nsteps, end=0., **kwargs):
+    super().__init__(**kwargs)
     self.start = start
     self.nsteps = nsteps
     self.end = end
