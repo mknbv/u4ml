@@ -82,7 +82,7 @@ def _plot_mean_std(xplot_fn, ys, axis=0, ylim=(-np.inf, np.inf),
   """ Plots mean and standard deviation area. """
   mean = np.mean(ys, axis)
   std = np.std(ys, axis)
-  line, = xplot_fn(mean, label=label, alpha=alpha[0], **kwargs)
+  line, = xplot_fn(mean, label=label, **kwargs)
   x, = xplot_fn.args
   fill_result = plt.fill_between(x,
                                  np.maximum(ylim[0], mean - std),
