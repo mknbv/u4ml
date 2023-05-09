@@ -1,5 +1,6 @@
 """ Plot utilities. """
 from contextlib import contextmanager, nullcontext
+from collections import defaultdict
 from functools import partial
 from IPython.display import display, clear_output
 from IPython import get_ipython
@@ -45,9 +46,10 @@ def _plot_median_quantiles(xplot_fn, ys, probs=(0.05, 0.95), axis=0,
     raise ValueError(f"probs must have length 2, got len(probs)={len(probs)}")
   probs = [probs[0], 0.5, probs[1]]
   quantiles = mstats.mquantiles(ys, probs, axis=axis)
-  line, = xplot_fn(quantiles[1], label=label, **kwargs)
+  line, = xplot_fn(quantiles[(slice(None),) * axis + (1,)], label=label, **kwargs)
   xs, = xplot_fn.args
-  fill = plt.fill_between(xs, quantiles[0], quantiles[2],
+  fill = plt.fill_between(xs, quantiles[(slice(None),) * axis + (0,)],
+                          quantiles[(slice(None),) * axis + (2,)],
                           color=line.get_color(), alpha=alpha)
   return line, fill
 
@@ -219,10 +221,10 @@ class LinesPlotter:
       finally:
         pass
 
-  def plot_line(self, key, xs, ys):
+  def plot_line(self, key, xs, ys, **kwargs):
     """ Creates a new line unde specified key. """
     with self.context():
-      self.lines[key], = self.ax.plot(xs, ys, label=key)
+      self.lines[key], = self.ax.plot(xs, ys, label=key, **kwargs)
       self.redraw_legend()
       return self.lines[key]
 
@@ -258,3 +260,49 @@ class LinesPlotter:
     with self.context():
       if self.output:
         clear_output()
+
+
+class MeansPlotter:
+  """ Plots lines, then means. """
+  def __init__(self, lines_plotter):
+    self.lines_plotter = lines_plotter
+    self.lines = defaultdict(list)
+
+  @classmethod
+  @contextmanager
+  def make_autoclear_context(cls, ax=None, output=None):
+    """ Creates instance and clears output on exiting the context. """
+    with LinesPlotter.make_autoclear_context(ax=ax, output=output) as plotter:
+      instance = MeansPlotter(plotter)
+      try:
+        yield instance
+      finally:
+        pass
+
+  def extend(self, key, newxs, newys):
+    """ Extends a line with new values. """
+    if key in self.lines and key not in self.lines_plotter.lines:
+      self.lines_plotter.plot_line(key, [], [], linestyle="--",
+                                   color=self.lines[key][0].get_color())
+    self.lines_plotter.extend(key, newxs, newys)
+
+  def clear_ax(self):
+    """ Clears the underlying axis. """
+    for child in self.lines_plotter.ax.get_children():
+      try:
+        child.remove()
+      except NotImplementedError:
+        pass
+    if legend := self.lines_plotter.ax.get_legend():
+      legend.remove()
+
+  def means(self):
+    """ Finishes all lines in the underlying plotter and plots means. """
+    self.clear_ax()
+    for key, pltr_line in self.lines_plotter.lines.items():
+      self.lines[key].append(pltr_line)
+      plot_mean_std(pltr_line.get_data()[0],
+                    [aline.get_data()[1] for aline in self.lines[key]],
+                    color=pltr_line.get_color(), label=key)
+    self.lines_plotter.lines.clear()
+    self.lines_plotter.redraw_legend()
