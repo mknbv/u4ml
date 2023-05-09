@@ -15,11 +15,11 @@ setup(
         "matplotlib>=3.5.1",
         "numpy>=1.16.4",
         "scipy>=1.5.0",
-        "tensorboard>=1.15",
-        "torch>=1.5.1",
         "tqdm",
     ],
     extras_require={
+        "torch": ["torch>=1.5.1"],
+        "tensorboard": ["tensorboard>=1.15"],
         "tensorflow": ["tensorflow>=2.8.0"],
     },
 )

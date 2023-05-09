@@ -1,9 +1,5 @@
 """ u4ml package initialization. """
-from u4ml.anneal import (
-    AnnealingVariable,
-    TorchSched,
-    LinearAnneal,
-)
+
 from u4ml.argparse import (
     get_defaults_parser,
     log_args,
@@ -25,6 +21,19 @@ from u4ml.plot import (
 )
 
 # pylint: disable=ungrouped-imports
+HAVE_TORCH = True
+try:
+  import torch
+except ModuleNotFoundError:
+  HAVE_TORCH = False
+if HAVE_TORCH:
+  from u4ml.anneal import (
+      AnnealingVariable,
+      TorchSched,
+      LinearAnneal,
+  )
+del HAVE_TORCH
+
 HAVE_TF = True
 try:
   import tensorflow as tf

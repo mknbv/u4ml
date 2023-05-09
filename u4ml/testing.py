@@ -21,12 +21,13 @@ class TorchTestCase(TestCase):
     random.seed(0)
     np.random.seed(0)
 
+  # pylint: disable=invalid-name
   def assertAllEqual(self, actual, expected):
     """ Checks that all elements of actual are equal to expected. """
     nt.assert_array_equal(_np(actual), _np(expected))
 
-  # pylint: disable=invalid-name
   def assertAllClose(self, actual, expected, rtol=1e-7, atol=0.):
     """ Checks that actual and expected arrays or torch tensors are equal. """
-    # pylint: disable=no-self-use
     nt.assert_allclose(_np(actual), _np(expected), rtol=rtol, atol=atol)
+
+  # pylint: enable=invalid-name
