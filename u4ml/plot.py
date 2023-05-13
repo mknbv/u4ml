@@ -296,13 +296,16 @@ class MeansPlotter:
     if legend := self.lines_plotter.ax.get_legend():
       legend.remove()
 
-  def means(self):
+  def means(self, clear_ax=True, **kwargs):
     """ Finishes all lines in the underlying plotter and plots means. """
-    self.clear_ax()
+    if clear_ax:
+      self.clear_ax()
     for key, pltr_line in self.lines_plotter.lines.items():
       self.lines[key].append(pltr_line)
-      plot_mean_std(pltr_line.get_data()[0],
-                    [aline.get_data()[1] for aline in self.lines[key]],
-                    color=pltr_line.get_color(), label=key)
+    plt.sca(self.lines_plotter.ax)
+    for key, lines in self.lines.items():
+      plot_mean_std(lines[0].get_data()[0],
+                    [aline.get_data()[1] for aline in lines],
+                    color=lines[0].get_color(), label=key, **kwargs)
     self.lines_plotter.lines.clear()
     self.lines_plotter.redraw_legend()
