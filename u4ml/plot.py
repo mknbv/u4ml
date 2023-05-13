@@ -197,7 +197,7 @@ class LinesPlotter:
   @contextmanager
   def autoclear_context(self):
     """ Displays and clears the output on closing this context. """
-    if self.output is not None:
+    if self.output and self.output is not None:
       display(self.output)
     try:
       yield self
