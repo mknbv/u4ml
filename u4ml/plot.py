@@ -300,7 +300,7 @@ class MeansPlotter:
     if legend := self.lines_plotter.ax.get_legend():
       legend.remove()
 
-  def means(self, clear_ax=True, **kwargs):
+  def means(self, clear_ax=True, plot_fn=plot_mean_std, **kwargs):
     """ Finishes all lines in the underlying plotter and plots means. """
     if clear_ax:
       self.clear_ax()
@@ -308,8 +308,8 @@ class MeansPlotter:
       self.lines[key].append(pltr_line)
     plt.sca(self.lines_plotter.ax)
     for key, lines in self.lines.items():
-      plot_mean_std(lines[0].get_data()[0],
-                    [aline.get_data()[1] for aline in lines],
-                    color=lines[0].get_color(), label=key, **kwargs)
+      plot_fn(lines[0].get_data()[0],
+              [aline.get_data()[1] for aline in lines],
+              color=lines[0].get_color(), label=key, **kwargs)
     self.lines_plotter.lines.clear()
     self.lines_plotter.redraw_legend()
