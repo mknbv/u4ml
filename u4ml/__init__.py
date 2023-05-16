@@ -18,6 +18,7 @@ from u4ml.plot import (
     loglog_mean_std,
     mean_std_errorbar,
     LinesPlotter,
+    MeansPlotter,
 )
 
 # pylint: disable=ungrouped-imports
