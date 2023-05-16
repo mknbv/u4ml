@@ -120,33 +120,37 @@ def loglog_mean_std(x, ys, axis=0, ylim=(-np.inf, np.inf),
                         label=label, alpha=alpha, **kwargs)
 
 
-def _plot_mean_lines(plot_fn, ys, axis=0, label=None, alpha=0.1):
+def _plot_mean_lines(plot_fn, ys, axis=0, label=None,
+                     lw=3, alpha=0.1, **kwargs):
   """ Plots all lines and their mean using plot_fn. """
   ys = np.asarray(ys)
-  lines = list(plot_fn(np.mean(ys, axis), label=label, lw=3))
+  lines = list(plot_fn(np.mean(ys, axis), label=label, lw=lw, **kwargs))
   num_lines = ys.shape[axis]
+  if "color" not in kwargs:
+    kwargs["color"] = lines[0].get_color()
   for i in range(num_lines):
-    lines.append(
-        plot_fn(np.take(ys, i, axis),
-                color=lines[0].get_color(), alpha=alpha)[0]
-    )
+    lines.append(plot_fn(np.take(ys, i, axis), alpha=alpha, **kwargs)[0])
   return lines
 
-def plot_mean_lines(x, ys, axis=0, label=None, alpha=0.1):
+def plot_mean_lines(x, ys, axis=0, label=None, lw=3, alpha=0.1, **kwargs):
   """ Plots all lines and their mean. """
-  return _plot_mean_lines(partial(plt.plot, x), ys, axis, label, alpha)
+  return _plot_mean_lines(partial(plt.plot, x), ys, axis, label,
+                          lw, alpha, **kwargs)
 
-def semilogy_mean_lines(x, ys, axis=0, label=None, alpha=0.1):
+def semilogy_mean_lines(x, ys, axis=0, label=None, lw=3, alpha=0.1, **kwargs):
   """ Y-axis log plot of lines and their mean. """
-  return _plot_mean_lines(partial(plt.semilogy, x), ys, axis, label, alpha)
+  return _plot_mean_lines(partial(plt.semilogy, x), ys, axis, label,
+                          lw, alpha, **kwargs)
 
-def semilogx_mean_lines(x, ys, axis=0, label=None, alpha=0.1):
+def semilogx_mean_lines(x, ys, axis=0, label=None, lw=3, alpha=0.1, **kwargs):
   """ X-axis log plot of lines and their mean. """
-  return _plot_mean_lines(partial(plt.semilogx, x), ys, axis, label, alpha)
+  return _plot_mean_lines(partial(plt.semilogx, x), ys, axis, label,
+                          lw, alpha, **kwargs)
 
-def loglog_mean_lines(x, ys, axis=0, label=None, alpha=0.1):
+def loglog_mean_lines(x, ys, axis=0, label=None, lw=3, alpha=0.1, **kwargs):
   """ Log-log plot of lines and their mean. """
-  return _plot_mean_lines(partial(plt.loglog, x), ys, axis, label, alpha)
+  return _plot_mean_lines(partial(plt.loglog, x), ys, axis, label,
+                          lw, alpha, **kwargs)
 
 
 def mean_std_errorbar(x, ys, axis=0, **kwargs):
