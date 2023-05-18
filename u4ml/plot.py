@@ -225,11 +225,12 @@ class LinesPlotter:
       finally:
         pass
 
-  def plot_line(self, key, xs, ys, **kwargs):
+  def plot_line(self, key, xs, ys, redraw_legend=True, **kwargs):
     """ Creates a new line unde specified key. """
     with self.context():
       self.lines[key], = self.ax.plot(xs, ys, label=key, **kwargs)
-      self.redraw_legend()
+      if redraw_legend:
+        self.redraw_legend()
       return self.lines[key]
 
   def before_extend_line(self):
@@ -283,26 +284,34 @@ class MeansPlotter:
       finally:
         pass
 
-  def extend(self, key, newxs, newys):
+  @property
+  def ax(self):
+    """ Returns the underlying axis. """
+    return self.lines_plotter.ax
+
+  def extend(self, key, newxs, newys, redraw_legend=True):
     """ Extends a line with new values. """
     if key in self.lines and key not in self.lines_plotter.lines:
       self.lines_plotter.plot_line(key, [], [], linestyle="--",
+                                   redraw_legend=redraw_legend,
                                    color=self.lines[key][0].get_color())
     self.lines_plotter.extend(key, newxs, newys)
 
   def clear_ax(self):
     """ Clears the underlying axis. """
-    for child in self.lines_plotter.ax.get_children():
+    for child in self.ax.get_children():
       try:
         child.remove()
       except NotImplementedError:
         pass
-    if legend := self.lines_plotter.ax.get_legend():
+    if legend := self.ax.get_legend():
       legend.remove()
 
-  def means(self, clear_ax=True, plot_fn=plot_mean_std, **kwargs):
+  def means(self, clear_ax=True, plot_fn=plot_mean_std,
+            redraw_legend=True, **kwargs):
     """ Finishes all lines in the underlying plotter and plots means. """
     if clear_ax:
+      redraw_legend &= self.ax.get_legend() is not None
       self.clear_ax()
     for key, pltr_line in self.lines_plotter.lines.items():
       self.lines[key].append(pltr_line)
@@ -312,4 +321,5 @@ class MeansPlotter:
               [aline.get_data()[1] for aline in lines],
               color=lines[0].get_color(), label=key, **kwargs)
     self.lines_plotter.lines.clear()
-    self.lines_plotter.redraw_legend()
+    if redraw_legend:
+      self.lines_plotter.redraw_legend()
