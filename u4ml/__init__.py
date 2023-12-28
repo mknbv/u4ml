@@ -27,13 +27,18 @@ try:
   import torch
 except ModuleNotFoundError:
   HAVE_TORCH = False
-if HAVE_TORCH:
+HAVE_TENSORBOARD = True
+try:
+  import torch.utils.tensorboard
+except ModuleNotFoundError:
+  HAVE_TENSORBOARD = False
+if HAVE_TORCH and HAVE_TENSORBOARD:
   from u4ml.anneal import (
       AnnealingVariable,
       TorchSched,
       LinearAnneal,
   )
-del HAVE_TORCH
+del HAVE_TORCH, HAVE_TENSORBOARD
 
 HAVE_TF = True
 try:
