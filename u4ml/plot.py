@@ -2,6 +2,7 @@
 from contextlib import contextmanager, nullcontext
 from collections import defaultdict
 from functools import partial
+from math import ceil
 from IPython.display import display, clear_output
 from IPython import get_ipython
 import ipywidgets as widgets
@@ -177,6 +178,12 @@ class Output(widgets.Output):
     super().__exit__(exc_type, exc_val, exc_tb)
     return False
 
+  def __copy__(self):
+    raise NotImplementedError()
+
+  def __deepcopy__(self, other):
+    raise NotImplementedError()
+
 
 class LinesPlotter:
   """ Iteratively plots several lines. """
@@ -189,9 +196,9 @@ class LinesPlotter:
 
   @classmethod
   @contextmanager
-  def make_autoclear_context(cls, ax=None, output=None):
+  def make_autoclear_context(cls, ax=None, output=None, **kwargs):
     """ Creates instance and clears output on exiting the context. """
-    instance = cls(ax if ax is not None else plt.gca(), output)
+    instance = cls(ax if ax is not None else plt.gca(), output, **kwargs)
     with instance.autoclear_context():
       try:
         yield instance
@@ -323,3 +330,31 @@ class MeansPlotter:
     self.lines_plotter.lines.clear()
     if redraw_legend:
       self.lines_plotter.redraw_legend()
+
+
+class LimitedPointsPlotter(LinesPlotter):
+  """Lines plotter with limited number of points.
+
+  Plots only `num_reset_points` every time once `max_points` is reached.
+  """
+  def __init__(self, ax, output=None, max_points=200, num_reset_points=50):
+    super().__init__(ax, output=output)
+    self.max_points = max_points
+    self.num_reset_points = num_reset_points
+    self.all_points = {}
+
+  def extend(self, key, newxs, newys):
+    """Extends line with new values."""
+    if key not in self.lines:
+      super().extend(key, newxs, newys)
+      return
+    if len(newxs) != len(newys):
+      raise ValueError(f"{len(newxs)=}, {len(newys)=} "
+                       "while expected to be the same")
+    line = self.lines[key]
+    xs, ys = line.get_data()
+    npoints = len(xs)
+    if npoints >= self.max_points:
+      nskip = ceil(npoints / (self.num_reset_points - len(newxs)))
+      line.set_data(xs[::nskip], ys[::nskip])
+    super().extend(key, newxs, newys)
